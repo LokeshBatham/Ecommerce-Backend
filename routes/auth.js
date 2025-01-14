@@ -47,7 +47,9 @@ router.post('/login', async (req, res) => {
     });
   } catch (err) {
     console.error(err);
-    res.status(500).send('Internal server error');
+    res.status(500).send({
+      message: 'Internal Server Error',
+    });
   }
 });
 
@@ -56,7 +58,9 @@ router.post('/validate', async (req, res) => {
   const token = req.headers.authorization;
 
   if (!token) {
-    return res.status(401).send('Access denied. No token provided.');
+    return res.status(401).send({
+      message: 'Access denied. No token provided.'
+    });
   }
 
   try {
@@ -64,7 +68,9 @@ router.post('/validate', async (req, res) => {
 
     // Verify the token exists in the database
     const user = await User.findOne({ _id: decoded._id, tokens: token });
-    if (!user) return res.status(401).send('Invalid token');
+    if (!user) return res.status(401).send({
+      message: 'Access denied. Invalid token.',
+    });
 
     res.status(200).send({
       success: true,
@@ -77,7 +83,9 @@ router.post('/validate', async (req, res) => {
     });
   } catch (err) {
     console.error(err);
-    res.status(400).send('Invalid or expired token');
+    res.status(400).send({
+      message: 'Invalid or expired token',
+    });
   }
 });
 
