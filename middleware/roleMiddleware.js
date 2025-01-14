@@ -4,7 +4,10 @@ const User = require('../models/User');
 // Verify token middleware
 const verifyToken = async (req, res, next) => {
   const token = req.header('Authorization');
-  if (!token) return res.status(401).send('Access denied');
+  if (!token) return res.status(401).send({
+    code: 401,
+    message: 'Access denied. No token provided.',
+  });
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
@@ -12,13 +15,19 @@ const verifyToken = async (req, res, next) => {
     // Check if the token matches the one stored in the user's document
     const user = await User.findById(decoded._id);
     if (!user || user.tokens !== token) {
-      return res.status(401).send('Invalid token');
+      return res.status(401).send({
+        code: 401,
+        message: 'Invalid token',
+      });
     }
 
     req.user = decoded; // Attach user data to the request object
     next();
   } catch (err) {
-    res.status(400).send('Invalid token');
+    res.status(400).send({
+      code: 400,
+      message: 'Invalid token',
+    });
   }
 };
 
