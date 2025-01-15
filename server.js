@@ -12,6 +12,11 @@ app.use(cors());
 
 app.use('/api/auth', authRoutes);
 app.use('/api/products', productRoutes);
+app.use((req, res, next) => {
+  res.setHeader("Cross-Origin-Opener-Policy", "same-origin");
+  res.setHeader("Cross-Origin-Embedder-Policy", "require-corp");
+  next();
+});
 
 mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => app.listen(5000, () => console.log('Server running on port 5000')))
